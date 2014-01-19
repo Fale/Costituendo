@@ -11,9 +11,6 @@ TABLE laws:
     id                  > INT # Autoincremental ID of the law
     name                > TEXT required=True # Name of the law
     became              > DATE # Date when became a law
-    #repealed            > BOOL # Is the law still valid or has been repealed?
-    #repeal_date         > DATE # Date of repeal (if it has been repealed)
-    # questi due campi si possono togliere. Non credo ci occuperemo di Statuto Albertino a breve... lol
 
 TABLE sections:
     '''
@@ -32,32 +29,57 @@ TABLE sections:
     order               > INT # Order to be able to sort in a selection
 
 TABLE articles:
+    '''
+        Table to host all laws articles.
+
+        1, 1, "L'Italia è una Repubblica...", 1, 1
+    '''
     id                  > INT # Autoincremental ID of the article
     number              > INT required=True # number of the article in the code
     text                > TEXT required=True # full original text of the article
     law_id              > FK(laws) # Foreign Key pointing to the law which the article is part of
-    section_id          > FK(sections) # Foreign Key pointing to the law which the section is part of
+    section_id          > FK(sections) # Foreign Key pointing to the section which the article is part of
 
 ### Resources
 
 TABLE resources:
+    '''
+        Table to host all resources on articles.
+
+        1, 1, 'Some text', 'http://example.com/page', 1, 1
+    '''
     id                  > INT # Autoincremental ID of the resource
     category_id         > FK(resource_categories) # Foreign Key pointing to the right resource_category
-    text                > TEXT required=True # text of the contribution, in case of a web-resource an extract or a short introduction
-    url                 > VARCHAR(255) # URI if web-resourse, else None
-    author              > FK(authors) # Foreign Key pointing to the right author
-    source              > FK(sources) # Foreign Key pointing to the right source
+    text                > TEXT required=True # Text of the contribution, in case of a web-resource an extract or a short introduction
+    uri                 > VARCHAR(255) # URI if web-resourse, else None
+    source_id           > FK(sources) # Foreign Key pointing to the source
     
-TABLE resource_categories: # reference array: ['esegesi', 'Storia', 'link', 'dottrina', 
-                           #       'giurisprudenza', 'normativa', 'attualita', 'dati']
-    id                  > INT 
-    name                > VARCHAR(100) required=True    
+TABLE resource_categories:
+    '''
+        Table to host all categories which identify the kind of resource
+    
+        1, 'Esegesi'
+        2, 'Storia'
+        3, 'Link'
+        4, 'Dottrina'
+        5, 'Giurisprudenza'
+        6, 'Normativa'
+        7, 'Attualita'
+        8, 'Dati'
+    '''
+    id                  > INT # Autoincremental ID of the resource category
+    name                > VARCHAR(100) required=True # Name of the resource category
 
-TABLE resource_fields:  
+TABLE resource_fields:
+    '''
+        Table to host optional free-caption fields.
+
+        1, 1, 'Reviewed by', 'Name Surname' 
+    '''
     id                  > INT # Autoincremental ID of the resource_field
     resource_id         > FK(resources) # Foreign Key pointing to his resource 
-    key                 > VARCHAR(50)
-    value               > TEXT
+    key                 > VARCHAR(50) # Name of the field
+    value               > TEXT # Value of the field
 
 ### Sources
 
@@ -97,6 +119,10 @@ TABLE author_fields:
     author_id           > FK(authors)
     key                 > VARCHAR(50)
     value               > TEXT
+
+TABLE author_resource:
+    author_id           > FK(authors)
+    resource_id         > FK(resources)
 
 ### Topics
 
